@@ -1,3 +1,4 @@
+"use client"
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -7,7 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Search, User, LogOut, LogIn, Menu, BookOpen, LayoutDashboard, Settings } from "lucide-react"; // Lucide icons for clean, consistent visuals
 import { useState } from "react";
-
 export function Navbar() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -19,7 +19,6 @@ export function Navbar() {
       router.push(`/courses?search=${encodeURIComponent(searchQuery)}`);
     }
   };
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

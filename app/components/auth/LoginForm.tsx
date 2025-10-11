@@ -1,6 +1,3 @@
-// Auth form. UX: Simple, error handling, social buttons.
-// UI: shadcn Form, Input, Button, lucide for icons.
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { signIn } from "next-auth/react";
-
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(6, "Password too short"),

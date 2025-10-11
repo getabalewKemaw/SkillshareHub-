@@ -1,0 +1,160 @@
+// schema.prisma
+// This is your Prisma schema for the SkillShare Hub project. It defines all necessary tables (models) and their relations.
+// Use this with PostgreSQL. Run `npx prisma migrate dev` to apply it to your database.
+// I've kept it concise yet complete for a 1-week build: Focus on core features first (auth, courses, enrollments), then add reviews and extras.
+// Models include relations for one-to-many (e.g., User has many Courses as instructor), many-to-many (e.g., Enrollments), and enums for roles/status.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Set this in your .env file, e.g., postgresql://user:password@localhost:5432/skillshare
+}
+
+// Enum for user roles (best practice for role-based access)
+enum Role {
+  USER
+  INSTRUCTOR
+  ADMIN
+}
+
+// Enum for course status (e.g., for moderation)
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// Enum for enrollment status
+enum EnrollmentStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+}
+
+// User model: Handles authentication and profiles
+model User {
+  id        String   @id @default(uuid()) // UUID for security over auto-increment
+  email     String   @unique
+  password  String? // Hashed password (null for OAuth users)
+  name      String?
+  bio       String?
+  avatarUrl String? // For profile pictures
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  courses     Course[] // Courses this user has created (as instructor)
+  enrollments Enrollment[] // Courses this user is enrolled in
+  reviews     Review[] // Reviews written by this user
+  sessions    Session[] // For auth sessions (via NextAuth adapter)
+  accounts    Account[]
+}
+
+// Course model: Core content entity
+model Course {
+  id           String       @id @default(uuid())
+  title        String
+  description  String
+  category     String? // e.g., "Web Development", for filtering
+  price        Float?       @default(0.0) // 0 for free courses
+  thumbnailUrl String? // Optimized image via next/image
+  status       CourseStatus @default(DRAFT)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Relations
+  instructorId String
+  instructor   User         @relation(fields: [instructorId], references: [id], onDelete: Cascade) // Delete course if instructor deleted
+  enrollments  Enrollment[]
+  reviews      Review[]
+  materials    Material[] // Course files/videos
+}
+
+// Enrollment model: Many-to-many relation between User and Course with extra data
+model Enrollment {
+  id          String           @id @default(uuid())
+  progress    Int              @default(0) // e.g., percentage completed
+  status      EnrollmentStatus @default(ACTIVE)
+  enrolledAt  DateTime         @default(now())
+  completedAt DateTime?
+
+  // Relations (composite key for uniqueness)
+  userId   String
+  courseId String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId]) // Prevent duplicate enrollments
+}
+
+// Review model: For ratings and feedback
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId   String
+  courseId String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId]) // One review per user per course
+}
+
+// Material model: For course files (videos, PDFs, etc.)
+model Material {
+  id        String   @id @default(uuid())
+  title     String
+  type      String // e.g., "video", "pdf"
+  url       String // Stored in Vercel Blob or S3
+  order     Int // For sequencing in course
+  createdAt DateTime @default(now())
+
+  // Relations
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// Session model: For NextAuth.js database adapter (stores auth sessions)
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  expires      DateTime
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Account model: For NextAuth.js (handles OAuth providers like Google)
+model Account {
+  id                String  @id @default(uuid())
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// VerificationToken model: For email verification in NextAuth (optional but good for security)
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
