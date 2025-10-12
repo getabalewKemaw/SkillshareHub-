@@ -1,5 +1,3 @@
-// Similar to LoginForm but for signup. UX: Password confirmation, terms checkbox.
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Mail, Lock } from "lucide-react";
-// Assume API call for signup
+import { useRouter } from 'next/navigation';
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+
 
 const signupSchema = z.object({
   name: z.string().min(3, "Name is required"),
@@ -22,17 +23,53 @@ const signupSchema = z.object({
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
-
 export function SignupForm() {
+  const router = useRouter();
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: { name: "", email: "", password: "", confirmPassword: "", agreeTerms: false },
   });
 
-  const handleSubmit = async (data: SignupFormValues) => {
-    // Call API to create user, then signIn
-    await fetch("/api/auth/signup", { method: "POST", body: JSON.stringify(data) });
-  };
+const handleSubmit = async (data: SignupFormValues) => {
+  try {
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      }),
+    });
+
+    // If status 201 created
+    if (res.status === 201) {
+      // success — redirect to login or home
+      window.location.href = "/login";
+      return;
+    }
+
+    // Try to parse JSON error if present
+    let errBody: unknown = null;
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      // safe to call json()
+      errBody = await res.json();
+    } else {
+      // no JSON body
+      errBody = { error: `Signup failed (status ${res.status})` };
+    }
+    console.log(errBody);
+
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error(e.message,"error when sign up")
+    console.error("Signup fetch error:", e);
+    alert("Network error. Try again.");
+  }
+};
+
+}
 
   return (
     <Form {...form}>
@@ -114,7 +151,14 @@ export function SignupForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">Sign Up</Button>
+                <p>Have an account  already?   <Link href="/login">Sign in now</Link>.</p>
+
+       <Button onClick={() => router.push("/signup")} variant="outline">
+  Sign up
+</Button>
+        <Button variant="outline" onClick={() => signIn("google", { callbackUrl: "/dashboard" })} className="w-full">
+          Continue with  Google
+        </Button>
       </form>
     </Form>
   );
