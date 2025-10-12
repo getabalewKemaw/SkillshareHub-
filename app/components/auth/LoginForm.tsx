@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from 'next/link';
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(6, "Password too short"),
@@ -18,10 +20,30 @@ export function LoginForm() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
+  const router = useRouter();
 
-  const handleSubmit = async (data: LoginFormValues) => {
-    await signIn("credentials", { email: data.email, password: data.password, redirect: false });
-  };
+const handleSubmit = async (data: LoginFormValues) => {
+  try {
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+    });
+
+    // signIn returns an object (when redirect: false) like { error, ok, status, url }
+    if (res?.error) {
+      alert(res.error || "Invalid credentials");
+    } else {
+      // success — redirect to dashboard (or callbackUrl)
+      router.push("/");
+    }
+  } catch (e: unknown) {
+    console.error("signIn error:", e);
+    alert("Login failed. Try again.");
+  }
+};
+
+
 
   return (
     <Form {...form}>
@@ -58,14 +80,17 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          <LogIn className="mr-2 h-4 w-4" /> Log In
-        </Button>
+        <p>Don not  have an account?  <Link href="/signup">Sign up now</Link>.</p>
+     <Button onClick={() => router.push("/login")} variant="outline">
+  <LogIn className="mr-2 h-4 w-4" /> Log in
+</Button>
+
+
         <div className="text-center text-sm">
           Or log in with
         </div>
-        <Button variant="outline" onClick={() => signIn("google")} className="w-full">
-          Google
+  <Button variant="outline" onClick={() => signIn("google", { callbackUrl: "/dashboard" })} className="w-full">
+        continue with  Google
         </Button>
       </form>
     </Form>
