@@ -86,8 +86,20 @@ export const authOptions: NextAuthOptions = {
     // Store role and avatar in JWT token
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id
         token.role = (user as any).role ?? "USER";
         token.avatarUrl = (user as any).avatarUrl ?? null;
+      } else if (token.email) {
+        // Fetch user data if not in token
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email },
+          select: { id: true, role: true, avatarUrl: true }
+        })
+        if (dbUser) {
+          token.id = dbUser.id
+          token.role = dbUser.role
+          token.avatarUrl = dbUser.avatarUrl
+        }
       }
       return token;
     },
@@ -95,7 +107,8 @@ export const authOptions: NextAuthOptions = {
     // Attach role and avatar to session for frontend use
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role as string;
+        session.user.id = token.id as string
+        session.user.role = token.role as 'USER' | 'INSTRUCTOR' | 'ADMIN'
         session.user.avatarUrl = token.avatarUrl as string | null;
       }
       return session;
