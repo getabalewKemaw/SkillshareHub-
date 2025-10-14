@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - SkillShare Hub
+# 🚀 SkillShare Hub - Quick Start Guide (UPDATED)
 
 Get your SkillShare Hub up and running in 5 minutes!
 

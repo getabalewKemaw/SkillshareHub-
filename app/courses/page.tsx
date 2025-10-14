@@ -3,10 +3,9 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { BookOpen, Users, Star, Filter, Search } from 'lucide-react'
+import { BookOpen, Users, Star } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
+import { CourseFilters } from '@/app/components/courses/CourseFilters'
 
 const CATEGORIES = [
   'All Categories',
@@ -103,71 +102,7 @@ export default async function CoursesPage({
 
         {/* Filters Section */}
         <div className="mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Filter Courses
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    name="search"
-                    placeholder="Search courses..."
-                    defaultValue={params.search}
-                    className="pl-10"
-                  />
-                </div>
-
-                {/* Category Filter */}
-                <Select name="category" defaultValue={params.category || 'All Categories'}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat} value={cat}>
-                        {cat}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {/* Price Filter */}
-                <Select name="price" defaultValue={params.price || 'all'}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Price" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Prices</SelectItem>
-                    <SelectItem value="free">Free</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Sort */}
-                <Select name="sort" defaultValue={params.sort || 'newest'}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="popular">Most Popular</SelectItem>
-                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Button type="submit" className="md:col-span-4">
-                  Apply Filters
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          <CourseFilters />
         </div>
 
         {/* Courses Grid */}

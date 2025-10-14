@@ -43,6 +43,16 @@ model User {
   bio       String?
   avatarUrl String? // For profile pictures
   role      Role     @default(USER)
+  
+  // Onboarding fields
+  onboardingCompleted Boolean  @default(false)
+  displayName         String?
+  skills              String[] // Array of skill tags for instructors
+  learningGoals       String?  // For students
+  interests           String[] // Array of interest tags for students
+  introVideoUrl       String?  // For instructors
+  paymentEnabled      Boolean  @default(false) // For instructors
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -52,6 +62,8 @@ model User {
   reviews     Review[] // Reviews written by this user
   sessions    Session[] // For auth sessions (via NextAuth adapter)
   accounts    Account[]
+  cartItems   CartItem[]
+  payments    Payment[]
 }
 
 // Course model: Core content entity
@@ -60,9 +72,12 @@ model Course {
   title        String
   description  String
   category     String? // e.g., "Web Development", for filtering
+  tags         String[] // Skill tags for matching
   price        Float?       @default(0.0) // 0 for free courses
   thumbnailUrl String? // Optimized image via next/image
   status       CourseStatus @default(DRAFT)
+  level        String?      @default("Beginner") // Beginner, Intermediate, Advanced
+  duration     Int?         // Duration in minutes
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
@@ -71,7 +86,9 @@ model Course {
   instructor   User         @relation(fields: [instructorId], references: [id], onDelete: Cascade) // Delete course if instructor deleted
   enrollments  Enrollment[]
   reviews      Review[]
-  materials    Material[] // Course files/videos
+  materials    Material[] // Course files/videos (deprecated - use lessons)
+  lessons      Lesson[]
+  cartItems    CartItem[]
 }
 
 // Enrollment model: Many-to-many relation between User and Course with extra data
@@ -156,4 +173,55 @@ model VerificationToken {
   token      String   @unique
   expires    DateTime
   @@unique([identifier, token])
+}
+
+// Lesson model: Individual lessons within a course
+model Lesson {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  type        String   // "video", "article", "quiz", "assignment"
+  videoUrl    String?  // For video lessons
+  content     String?  // For article/text lessons
+  duration    Int?     // Duration in minutes
+  order       Int      // Sequence in course
+  isFree      Boolean  @default(false) // Preview lessons
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// CartItem model: Shopping cart for courses
+model CartItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId   String
+  courseId String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId]) // One course per user in cart
+}
+
+// Payment model: Transaction records
+model Payment {
+  id              String   @id @default(uuid())
+  amount          Float
+  currency        String   @default("ETB") // Ethiopian Birr
+  status          String   // "pending", "completed", "failed", "refunded"
+  provider        String   @default("chapa") // Payment provider
+  transactionRef  String?  @unique // Chapa transaction reference
+  metadata        String?  // JSON string for additional data
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  userId   String
+  courseId String?
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
