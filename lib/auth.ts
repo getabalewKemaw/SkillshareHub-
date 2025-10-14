@@ -37,15 +37,20 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           role: user.role,
           avatarUrl: user.avatarUrl,
+          onboardingCompleted: user.onboardingCompleted,
         };
       },
     }),
 
     // Google OAuth login
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
   ],
 
   pages: {
@@ -69,13 +74,14 @@ export const authOptions: NextAuthOptions = {
         // If not, create a new user
         if (!existingUser) {
           const profileWithPicture = profile as { picture?: string } | null | undefined;
+          const userImage = user.image as string | undefined;
 
           await prisma.user.create({
             data: {
               email,
               role: "USER", // default role
               name: profile?.name ?? user.name ?? undefined,
-              avatarUrl: profileWithPicture?.picture ?? (user as any).image ?? undefined,
+              avatarUrl: profileWithPicture?.picture ?? userImage ?? undefined,
             },
           });
         }
@@ -87,18 +93,20 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = (user as any).role ?? "USER";
-        token.avatarUrl = (user as any).avatarUrl ?? null;
+        token.role = user.role ?? "USER";
+        token.avatarUrl = user.avatarUrl ?? null;
+        token.onboardingCompleted = user.onboardingCompleted ?? false;
       } else if (token.email) {
         // Fetch user data if not in token
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email },
-          select: { id: true, role: true, avatarUrl: true }
+          select: { id: true, role: true, avatarUrl: true, onboardingCompleted: true }
         })
         if (dbUser) {
           token.id = dbUser.id
           token.role = dbUser.role
           token.avatarUrl = dbUser.avatarUrl
+          token.onboardingCompleted = dbUser.onboardingCompleted
         }
       }
       return token;
@@ -110,13 +118,19 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string
         session.user.role = token.role as 'USER' | 'INSTRUCTOR' | 'ADMIN'
         session.user.avatarUrl = token.avatarUrl as string | null;
+        session.user.onboardingCompleted = token.onboardingCompleted as boolean;
       }
       return session;
     },
 
     // Redirect users after login
     async redirect({ url, baseUrl }) {
-      return "/dashboard"; // always go to dashboard
+      // If url is relative, make it absolute
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // If url is on the same origin, return it
+      else if (new URL(url).origin === baseUrl) return url;
+      // Otherwise return base URL
+      return baseUrl;
     },
   },
 };

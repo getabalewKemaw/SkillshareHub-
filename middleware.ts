@@ -16,8 +16,8 @@ export async function middleware(request: NextRequest) {
     pathname === route || pathname.startsWith(route)
   )
 
-  // Allow public routes
-  if (isPublicRoute) {
+  // Allow public routes and API routes (except protected ones)
+  if (isPublicRoute || pathname.startsWith('/api/')) {
     return NextResponse.next()
   }
 
@@ -26,6 +26,23 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
+  }
+
+  // Onboarding flow - redirect to onboarding if not completed
+  const onboardingCompleted = token.onboardingCompleted as boolean
+  const isOnboardingRoute = pathname.startsWith('/onboarding')
+
+  if (!onboardingCompleted && !isOnboardingRoute) {
+    return NextResponse.redirect(new URL('/onboarding', request.url))
+  }
+
+  // If onboarding is completed but user is on onboarding page, redirect to dashboard
+  if (onboardingCompleted && isOnboardingRoute) {
+    const userRole = token.role as string
+    if (userRole === 'INSTRUCTOR') {
+      return NextResponse.redirect(new URL('/dashboard/instructor', request.url))
+    }
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   // Role-based access control
@@ -42,6 +59,13 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/dashboard/instructor')) {
     if (userRole !== 'INSTRUCTOR' && userRole !== 'ADMIN') {
       return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+  }
+
+  // Redirect to appropriate dashboard
+  if (pathname === '/dashboard') {
+    if (userRole === 'INSTRUCTOR') {
+      return NextResponse.redirect(new URL('/dashboard/instructor', request.url))
     }
   }
 
