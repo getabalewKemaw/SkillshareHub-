@@ -34,15 +34,30 @@ enum EnrollmentStatus {
   COMPLETED
 }
 
+// Enum for payment status
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
 // User model: Handles authentication and profiles
 model User {
   id        String   @id @default(uuid()) // UUID for security over auto-increment
   email     String   @unique
   password  String? // Hashed password (null for OAuth users)
   name      String?
+  displayName       String?
   bio       String?
   avatarUrl String? // For profile pictures
   role      Role     @default(USER)
+  onboardingCompleted Boolean @default(false)
+  // Onboarding and matching data
+  skills    String[] @default([]) // for instructors
+  interests String[] @default([]) // for students
+  learningGoals String?
+  introVideoUrl String?
+  isPaymentEnabled Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -52,6 +67,8 @@ model User {
   reviews     Review[] // Reviews written by this user
   sessions    Session[] // For auth sessions (via NextAuth adapter)
   accounts    Account[]
+  cart        Cart?
+  payments    Payment[]
 }
 
 // Course model: Core content entity
@@ -119,6 +136,41 @@ model Material {
   // Relations
   courseId String
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// Cart model: server-side cart persistence
+model Cart {
+  id        String      @id @default(uuid())
+  userId    String      @unique
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  priceAtAdd Float
+
+  @@unique([cartId, courseId])
+}
+
+// Payment model: records Chapa transactions
+model Payment {
+  id        String         @id @default(uuid())
+  txRef     String         @unique
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Float
+  currency  String
+  status    PaymentStatus  @default(PENDING)
+  courseIds String[]       // course ids included in this payment
+  createdAt DateTime       @default(now())
 }
 
 // Session model: For NextAuth.js database adapter (stores auth sessions)

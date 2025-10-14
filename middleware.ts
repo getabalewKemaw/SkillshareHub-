@@ -31,6 +31,15 @@ export async function middleware(request: NextRequest) {
   // Role-based access control
   const userRole = token.role as string
 
+  // Onboarding redirect: if not completed, force to onboarding flow except allowed paths
+  const onboardingCompleted = (token as any).onboardingCompleted as boolean | undefined
+  const onboardedCookie = request.cookies.get('sshub_onboarded')?.value === '1'
+  const onboardingPaths = ['/onboarding', '/api/onboarding']
+  const isOnboardingRoute = onboardingPaths.some(route => pathname === route || pathname.startsWith(route))
+  if (!onboardingCompleted && !onboardedCookie && !isOnboardingRoute) {
+    return NextResponse.redirect(new URL('/onboarding', request.url))
+  }
+
   // Admin-only routes
   if (pathname.startsWith('/admin')) {
     if (userRole !== 'ADMIN') {

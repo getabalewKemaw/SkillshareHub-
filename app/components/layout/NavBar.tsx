@@ -53,6 +53,9 @@ export function Navbar() {
             <Link href="/courses" className="text-sm font-medium hover:text-primary">
               Courses
             </Link>
+            <Link href="/cart" className="text-sm font-medium hover:text-primary">
+              Cart
+            </Link>
             {session ? (
               <>
                 <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
@@ -87,6 +90,11 @@ export function Navbar() {
                         </Link>
                       </DropdownMenuItem>
                     )}
+                    <DropdownMenuItem asChild>
+                      <Link href="/matching">
+                        <Settings className="mr-2 h-4 w-4" /> Matching
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="mr-2 h-4 w-4" /> Log out

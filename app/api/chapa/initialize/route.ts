@@ -15,51 +15,38 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { courseId, amount } = body
+    const { courseId, amount, courseIds } = body
 
-    if (!courseId || !amount) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      )
-    }
-
-    // Verify course exists and get details
-    const course = await prisma.course.findUnique({
-      where: { id: courseId },
-      select: { id: true, title: true, price: true }
-    })
-
-    if (!course) {
-      return NextResponse.json(
-        { error: 'Course not found' },
-        { status: 404 }
-      )
-    }
-
-    // Verify amount matches course price
-    if (course.price !== amount) {
-      return NextResponse.json(
-        { error: 'Invalid amount' },
-        { status: 400 }
-      )
-    }
-
-    // Check if already enrolled
-    const existingEnrollment = await prisma.enrollment.findUnique({
-      where: {
-        userId_courseId: {
-          userId: session.user.id,
-          courseId: courseId
-        }
+    // Support single course or multiple courses (cart)
+    let selectedCourses: { id: string; title: string; price: number | null }[] = []
+    if (Array.isArray(courseIds) && courseIds.length > 0) {
+      selectedCourses = await prisma.course.findMany({
+        where: { id: { in: courseIds } },
+        select: { id: true, title: true, price: true },
+      })
+      if (selectedCourses.length === 0) {
+        return NextResponse.json({ error: 'No valid courses' }, { status: 400 })
       }
-    })
+    } else if (courseId) {
+      const course = await prisma.course.findUnique({
+        where: { id: courseId },
+        select: { id: true, title: true, price: true }
+      })
+      if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      selectedCourses = [course]
+    } else {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
 
-    if (existingEnrollment) {
-      return NextResponse.json(
-        { error: 'Already enrolled in this course' },
-        { status: 400 }
-      )
+    // Filter out courses already enrolled
+    const existingEnrollments = await prisma.enrollment.findMany({
+      where: { userId: session.user.id, courseId: { in: selectedCourses.map(c => c.id) } },
+      select: { courseId: true },
+    })
+    const enrolledSet = new Set(existingEnrollments.map(e => e.courseId))
+    selectedCourses = selectedCourses.filter(c => !enrolledSet.has(c.id))
+    if (selectedCourses.length === 0) {
+      return NextResponse.json({ error: 'Already enrolled in all selected courses' }, { status: 400 })
     }
 
     // Initialize Chapa payment
@@ -72,12 +59,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const txRef = `tx-${Date.now()}-${session.user.id}-${courseId}`
-    const returnUrl = `${process.env.NEXTAUTH_URL}/courses/${courseId}?payment=success`
+    const txRef = `tx-${Date.now()}-${session.user.id}-${selectedCourses.map(c=>c.id).join('_')}`
+    const returnUrl = `${process.env.NEXTAUTH_URL}/cart?payment=success`
     const callbackUrl = `${process.env.NEXTAUTH_URL}/api/chapa/webhook`
 
     const chapaPayload = {
-      amount: amount.toString(),
+      amount: (selectedCourses.reduce((sum, c) => sum + (c.price ?? 0), 0)).toString(),
       currency: 'ETB',
       email: session.user.email,
       first_name: session.user.name?.split(' ')[0] || 'Student',
@@ -87,7 +74,7 @@ export async function POST(request: NextRequest) {
       return_url: returnUrl,
       customization: {
         title: 'SkillShare Hub',
-        description: `Payment for: ${course.title}`
+        description: `Payment for: ${selectedCourses.length} course(s)`
       }
     }
 
@@ -110,9 +97,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Store transaction reference for verification
-    // You might want to create a Payment model in your schema for this
-    
+    // Store transaction
+    await prisma.payment.create({
+      data: {
+        txRef,
+        userId: session.user.id,
+        amount: selectedCourses.reduce((sum, c) => sum + (c.price ?? 0), 0),
+        currency: 'ETB',
+        status: 'PENDING',
+        courseIds: selectedCourses.map(c => c.id),
+      }
+    })
+
     return NextResponse.json({
       success: true,
       checkoutUrl: chapaData.data.checkout_url,

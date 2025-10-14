@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 // Assume chapa integration from lib/chapa.ts
-import { initializeChapaPayment } from "@/lib/chapa";
+// Use server API to initialize Chapa
 
 interface EnrollmentButtonProps {
   courseId: string;
@@ -30,20 +30,16 @@ export function EnrollmentButton({ courseId, price, isEnrolled }: EnrollmentButt
     setIsLoading(true);
     try {
       if (price > 0) {
-        // Chapa payment
-        const paymentUrl = await initializeChapaPayment({
-          amount: price,
-          currency: "ETB", // Assuming Ethiopian Birr for Chapa; adjust as needed
-          email: session.user.email,
-          first_name: session.user.name?.split(" ")[0] || "",
-          last_name: session.user.name?.split(" ")[1] || "",
-          tx_ref: `enroll-${courseId}-${Date.now()}`,
-          callback_url: `${window.location.origin}/api/chapa/webhook`, // Handle success
-          return_url: `${window.location.origin}/courses/${courseId}?enrolled=true`,
-          title: "Course Enrollment",
-          description: `Payment for course ${courseId}`,
-        });
-        window.location.href = paymentUrl;
+        const res = await fetch(`/api/chapa/initialize`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseId }),
+        })
+        const data = await res.json()
+        if (data.checkoutUrl) {
+          window.location.href = data.checkoutUrl
+          return
+        }
       } else {
         // Free enrollment: Call API route to create Enrollment
         await fetch(`/api/courses/${courseId}/enroll`, { method: "POST" });
