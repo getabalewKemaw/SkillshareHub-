@@ -22,28 +22,22 @@ export async function POST(request: NextRequest) {
 
     // Handle successful payment
     if (event === 'charge.success' || data.status === 'success') {
-      const { tx_ref, email, amount } = data
+      const { tx_ref, email } = data
 
-      // Parse transaction reference to get userId and courseId
-      // Format: tx-{timestamp}-{userId}-{courseId}
-      const parts = tx_ref.split('-')
-      if (parts.length < 4) {
-        console.error('Invalid tx_ref format:', tx_ref)
-        return NextResponse.json({ error: 'Invalid transaction reference' }, { status: 400 })
+      // Use Payment record for course list
+      const payment = await prisma.payment.findUnique({ where: { txRef: tx_ref } })
+      if (!payment) {
+        console.error('Payment not found for tx_ref', tx_ref)
+        return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
       }
-
-      const userId = parts[2]
-      const courseId = parts.slice(3).join('-') // Handle UUIDs with dashes
+      const userId = payment.userId
+      const courseIds = payment.courseIds
 
       // Verify user and course exist
-      const [user, course] = await Promise.all([
-        prisma.user.findUnique({ where: { id: userId } }),
-        prisma.course.findUnique({ where: { id: courseId } })
-      ])
-
-      if (!user || !course) {
-        console.error('User or course not found:', { userId, courseId })
-        return NextResponse.json({ error: 'User or course not found' }, { status: 404 })
+      const user = await prisma.user.findUnique({ where: { id: userId } })
+      if (!user) {
+        console.error('User not found:', { userId })
+        return NextResponse.json({ error: 'User not found' }, { status: 404 })
       }
 
       // Verify email matches
@@ -52,40 +46,21 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Email mismatch' }, { status: 400 })
       }
 
-      // Check if enrollment already exists
-      const existingEnrollment = await prisma.enrollment.findUnique({
-        where: {
-          userId_courseId: {
-            userId: userId,
-            courseId: courseId
-          }
-        }
-      })
-
-      if (existingEnrollment) {
-        console.log('Enrollment already exists:', existingEnrollment.id)
-        return NextResponse.json({ 
-          success: true, 
-          message: 'Enrollment already exists' 
+      // Create enrollments for all courses
+      for (const courseId of courseIds) {
+        const existing = await prisma.enrollment.findUnique({
+          where: { userId_courseId: { userId, courseId } }
         })
+        if (!existing) {
+          await prisma.enrollment.create({
+            data: { userId, courseId, status: 'ACTIVE', progress: 0 }
+          })
+        }
       }
 
-      // Create enrollment
-      const enrollment = await prisma.enrollment.create({
-        data: {
-          userId: userId,
-          courseId: courseId,
-          status: 'ACTIVE',
-          progress: 0
-        }
-      })
+      await prisma.payment.update({ where: { txRef: tx_ref }, data: { status: 'SUCCESS' } })
 
-      console.log('Enrollment created successfully:', enrollment.id)
-
-      return NextResponse.json({
-        success: true,
-        enrollmentId: enrollment.id
-      })
+      return NextResponse.json({ success: true })
     }
 
     // Handle failed payment

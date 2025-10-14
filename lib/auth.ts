@@ -86,19 +86,21 @@ export const authOptions: NextAuthOptions = {
     // Store role and avatar in JWT token
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
+        token.id = (user as any).id
         token.role = (user as any).role ?? "USER";
         token.avatarUrl = (user as any).avatarUrl ?? null;
-      } else if (token.email) {
+      }
+      if (!token.id && token.email) {
         // Fetch user data if not in token
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email },
-          select: { id: true, role: true, avatarUrl: true }
+          select: { id: true, role: true, avatarUrl: true, onboardingCompleted: true }
         })
         if (dbUser) {
           token.id = dbUser.id
           token.role = dbUser.role
           token.avatarUrl = dbUser.avatarUrl
+          ;(token as any).onboardingCompleted = dbUser.onboardingCompleted
         }
       }
       return token;
@@ -110,13 +112,15 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string
         session.user.role = token.role as 'USER' | 'INSTRUCTOR' | 'ADMIN'
         session.user.avatarUrl = token.avatarUrl as string | null;
+        ;(session.user as any).onboardingCompleted = (token as any).onboardingCompleted ?? false
       }
       return session;
     },
 
     // Redirect users after login
     async redirect({ url, baseUrl }) {
-      return "/dashboard"; // always go to dashboard
+      // Let middleware handle finer routing. Default to dashboard.
+      return "/dashboard";
     },
   },
 };
