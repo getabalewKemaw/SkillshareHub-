@@ -96,8 +96,10 @@ export function SignupForm() {
             }}
             className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg transition-all ${
               selectedRole === "USER"
+
                 ? "border-purple-500 bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400"
                 : "border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700"
+
             }`}
           >
             <GraduationCap className="h-8 w-8 mb-2" />
@@ -113,8 +115,12 @@ export function SignupForm() {
             }}
             className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg transition-all ${
               selectedRole === "INSTRUCTOR"
+
                 ? "border-purple-500 bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400"
                 : "border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700"
+
+            
+
             }`}
           >
             <BookOpen className="h-8 w-8 mb-2" />
@@ -209,7 +215,9 @@ export function SignupForm() {
         <p className="text-sm text-red-600">{errors.agreeTerms.message}</p>
       )}
 
+
       <Button type="submit" className="w-full btn-brand-gradient text-white font-semibold" disabled={loading}>
+
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -222,7 +230,9 @@ export function SignupForm() {
 
       <div className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
+
         <Link href="/login" className="text-purple-600 dark:text-purple-400 hover:underline font-semibold">
+
           Sign in now
         </Link>
       </div>

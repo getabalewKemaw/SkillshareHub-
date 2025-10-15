@@ -53,7 +53,10 @@ export function LoginForm() {
   };
 
   return (
+
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
+
+
       {error && (
         <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
           {error}
@@ -94,7 +97,9 @@ export function LoginForm() {
         )}
       </div>
 
+
       <Button type="submit" className="w-full btn-brand-gradient text-white font-semibold" disabled={loading}>
+
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -107,19 +112,27 @@ export function LoginForm() {
 
       <div className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
+
         <Link href="/signup" className="text-purple-600 dark:text-purple-400 hover:underline font-semibold">
+
           Sign up now
         </Link>
       </div>
 
+
       {/* <div className="relative">
+
+      <div className="relative">
+
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
+
           <span className="bg-white dark:bg-card px-2 text-muted-foreground">Or continue with</span>
         </div>
       </div> */}
+
 
 
     </form>
