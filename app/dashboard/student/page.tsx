@@ -223,8 +223,9 @@ export default async function StudentDashboard() {
             </Link>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {recommendations.slice(0, 6).map((course: any) => (
-              <Card key={course.id} className="hover:shadow-lg transition-shadow">
+              <Card key={course.id as string} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="aspect-video bg-gradient-to-br from-green-500 to-teal-600 rounded-lg mb-4 flex items-center justify-center relative">
                     <GraduationCap className="h-12 w-12 text-white" />
@@ -273,6 +274,7 @@ export default async function StudentDashboard() {
             <h2 className="text-2xl font-bold">Top Instructors For You</h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {instructorRecommendations.map((instructor: any) => (
               <Card key={instructor.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader className="text-center">

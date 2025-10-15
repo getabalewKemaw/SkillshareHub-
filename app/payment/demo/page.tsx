@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, CreditCard, Loader2, XCircle } from "lucide-react"
 
-export default function DemoPaymentPage() {
+function DemoPaymentContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [processing, setProcessing] = useState(false)
@@ -112,7 +112,7 @@ export default function DemoPaymentPage() {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <p className="text-sm text-blue-800">
                     <strong>Demo Mode:</strong> This is a simulated payment gateway. 
-                    Click "Pay Now" to simulate a successful payment and enroll in the course.
+                    Click &ldquo;Pay Now&rdquo; to simulate a successful payment and enroll in the course.
                   </p>
                 </div>
 
@@ -171,5 +171,13 @@ export default function DemoPaymentPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function DemoPaymentPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <DemoPaymentContent />
+    </Suspense>
   )
 }

@@ -6,11 +6,12 @@ import { prisma } from "@/lib/prisma"
 // GET lessons for a course
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const lessons = await prisma.lesson.findMany({
-      where: { courseId: params.id },
+      where: { courseId: id },
       orderBy: { order: 'asc' },
     })
 
@@ -24,9 +25,10 @@ export async function GET(
 // POST - Create new lesson
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
@@ -35,7 +37,7 @@ export async function POST(
 
     // Check course ownership
     const course = await prisma.course.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!course) {
@@ -55,7 +57,7 @@ export async function POST(
 
     const lesson = await prisma.lesson.create({
       data: {
-        courseId: params.id,
+        courseId: id,
         title,
         description: description || null,
         type,

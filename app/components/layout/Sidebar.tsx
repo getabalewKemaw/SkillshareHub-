@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { LayoutDashboard, BookOpen, User, Settings, LogOut } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 

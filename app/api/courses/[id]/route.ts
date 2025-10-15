@@ -6,11 +6,12 @@ import { prisma } from "@/lib/prisma"
 // GET single course
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const course = await prisma.course.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         instructor: {
           select: {
@@ -48,9 +49,10 @@ export async function GET(
 // PATCH - Update course
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
@@ -58,7 +60,7 @@ export async function PATCH(
     }
 
     const course = await prisma.course.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!course) {
@@ -72,7 +74,7 @@ export async function PATCH(
 
     const data = await req.json()
     const updatedCourse = await prisma.course.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: data.title,
         description: data.description,
@@ -106,9 +108,10 @@ export async function PATCH(
 // DELETE course
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
@@ -116,7 +119,7 @@ export async function DELETE(
     }
 
     const course = await prisma.course.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!course) {
@@ -129,7 +132,7 @@ export async function DELETE(
     }
 
     await prisma.course.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })

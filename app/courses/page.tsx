@@ -32,7 +32,7 @@ async function getCourses(searchParams: SearchParams) {
   try {
     const { search, category, price, sort } = searchParams
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       status: 'PUBLISHED'
     }
 
@@ -54,7 +54,7 @@ async function getCourses(searchParams: SearchParams) {
       where.price = { gt: 0 }
     }
 
-    let orderBy: any = { createdAt: 'desc' }
+    let orderBy: Record<string, unknown> = { createdAt: 'desc' }
     if (sort === 'price-asc') {
       orderBy = { price: 'asc' }
     } else if (sort === 'price-desc') {
@@ -138,7 +138,7 @@ export default async function CoursesPage({
                           {course.category}
                         </Badge>
                       )}
-                      {course.price > 0 && (
+                      {course.price !== null && course.price > 0 && (
                         <Badge variant="outline" className="text-xs font-semibold bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800">
                           ${course.price}
                         </Badge>

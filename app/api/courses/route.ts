@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const instructorId = searchParams.get('instructorId')
     const status = searchParams.get('status')
 
-    const where: any = {}
+    const where: Record<string, unknown> = {}
 
     if (category) where.category = category
     if (instructorId) where.instructorId = instructorId

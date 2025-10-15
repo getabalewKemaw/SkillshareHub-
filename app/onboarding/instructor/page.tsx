@@ -18,7 +18,7 @@ const instructorOnboardingSchema = z.object({
   displayName: z.string().min(2, "Display name must be at least 2 characters"),
   bio: z.string().min(20, "Bio must be at least 20 characters"),
   skills: z.string().min(1, "Please add at least one skill"),
-  paymentEnabled: z.boolean().default(false),
+  paymentEnabled: z.boolean(),
 })
 
 type InstructorOnboardingForm = z.infer<typeof instructorOnboardingSchema>
@@ -35,6 +35,9 @@ export default function InstructorOnboarding() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<InstructorOnboardingForm>({
     resolver: zodResolver(instructorOnboardingSchema),
+    defaultValues: {
+      paymentEnabled: false,
+    },
   })
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
