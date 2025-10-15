@@ -1,14 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Loader2, XCircle } from "lucide-react"
 import Link from "next/link"
 
-export default function PaymentSuccessPage() {
-  const router = useRouter()
+function PaymentSuccessContent() {
   const searchParams = useSearchParams()
   const tx_ref = searchParams.get('tx_ref')
   
@@ -93,5 +92,13 @@ export default function PaymentSuccessPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <PaymentSuccessContent />
+    </Suspense>
   )
 }

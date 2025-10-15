@@ -7,13 +7,15 @@ import { Star } from "lucide-react";
 interface Review {
   id: string;
   rating: number;
-  comment?: string;
-  user: { name: string; avatarUrl?: string };
+  comment?: string | null;
+  user: { name: string | null; avatarUrl?: string | null };
   createdAt: Date;
 }
 
 interface ReviewListProps {
+  courseId: string;
   reviews: Review[];
+  isEnrolled: boolean;
 }
 
 export function ReviewList({ reviews }: ReviewListProps) {
@@ -22,12 +24,12 @@ export function ReviewList({ reviews }: ReviewListProps) {
       {reviews.map((review) => (
         <div key={review.id} className="flex space-x-4">
           <Avatar>
-            <AvatarImage src={review.user.avatarUrl} />
-            <AvatarFallback>{review.user.name[0]}</AvatarFallback>
+            <AvatarImage src={review.user.avatarUrl || undefined} />
+            <AvatarFallback>{review.user.name?.[0] || 'U'}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex items-center space-x-2">
-              <span className="font-medium">{review.user.name}</span>
+              <span className="font-medium">{review.user.name || 'Anonymous'}</span>
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className={`h-4 w-4 ${i < review.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />

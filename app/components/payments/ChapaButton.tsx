@@ -3,22 +3,33 @@
 
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
-import { initializeChapaPayment } from "@/lib/chapa";
+import { initializePayment as initializeChapaPayment } from "@/lib/chapa";
 
 interface ChapaButtonProps {
   amount: number;
   txRef: string;
-  // Other Chapa params
+  email: string;
+  firstName: string;
+  lastName: string;
+  callbackUrl: string;
+  returnUrl: string;
 }
 
-export function ChapaButton({ amount, txRef }: ChapaButtonProps) {
+export function ChapaButton({ amount, txRef, email, firstName, lastName, callbackUrl, returnUrl }: ChapaButtonProps) {
   const handlePayment = async () => {
-    const paymentUrl = await initializeChapaPayment({
+    const response = await initializeChapaPayment({
       amount,
+      currency: 'ETB',
+      email,
+      first_name: firstName,
+      last_name: lastName,
       tx_ref: txRef,
-      // Fill other params
+      callback_url: callbackUrl,
+      return_url: returnUrl,
     });
-    window.location.href = paymentUrl;
+    if (response.data?.checkout_url) {
+      window.location.href = response.data.checkout_url;
+    }
   };
 
   return (

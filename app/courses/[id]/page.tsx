@@ -301,7 +301,7 @@ export default async function CourseDetailPage({
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
-                  <CardTitle>What you'll learn</CardTitle>
+                  <CardTitle>What you&apos;ll learn</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">

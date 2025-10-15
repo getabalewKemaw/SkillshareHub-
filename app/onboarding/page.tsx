@@ -37,18 +37,14 @@ export default function OnboardingRoleSelection() {
     }
   }
 
-  // Redirect if already completed onboarding
-  if (session?.user?.onboardingCompleted) {
-    router.push('/dashboard')
-    return null
-  }
+  // User will be redirected by middleware if onboarding is completed
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome to SkillShare Hub! 🎓</h1>
-          <p className="text-lg text-gray-600">Let's get you started. Choose your path:</p>
+          <p className="text-lg text-gray-600">Let&apos;s get you started. Choose your path:</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -58,7 +54,7 @@ export default function OnboardingRoleSelection() {
               <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
                 <UserCircle className="w-10 h-10 text-blue-600" />
               </div>
-              <CardTitle className="text-2xl">I'm a Student</CardTitle>
+              <CardTitle className="text-2xl">I&apos;m a Student</CardTitle>
               <CardDescription className="text-base">
                 Learn new skills from expert instructors
               </CardDescription>
@@ -98,7 +94,7 @@ export default function OnboardingRoleSelection() {
               <div className="mx-auto mb-4 w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
                 <GraduationCap className="w-10 h-10 text-purple-600" />
               </div>
-              <CardTitle className="text-2xl">I'm an Instructor</CardTitle>
+              <CardTitle className="text-2xl">I&apos;m an Instructor</CardTitle>
               <CardDescription className="text-base">
                 Share your knowledge and earn money
               </CardDescription>

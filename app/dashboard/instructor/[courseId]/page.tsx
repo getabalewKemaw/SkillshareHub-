@@ -75,7 +75,14 @@ export default async function EditCoursePage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <CourseForm course={course} />
+            <CourseForm initialData={{
+              title: course.title,
+              description: course.description || undefined,
+              category: course.category || undefined,
+              price: course.price?.toString() || undefined,
+              level: course.level || undefined,
+              tags: course.tags?.join(', ') || undefined,
+            }} />
           </CardContent>
         </Card>
       </div>

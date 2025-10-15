@@ -112,13 +112,14 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    // Attach role and avatar to session for frontend use
+    // Attach role to session for frontend use
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as 'USER' | 'INSTRUCTOR' | 'ADMIN'
-        session.user.avatarUrl = token.avatarUrl as string | null;
-        session.user.onboardingCompleted = token.onboardingCompleted as boolean;
+        // avatarUrl and onboardingCompleted are available in token but not in session type
+        // session.user.avatarUrl = token.avatarUrl as string | null;
+        // session.user.onboardingCompleted = token.onboardingCompleted as boolean;
       }
       return session;
     },
