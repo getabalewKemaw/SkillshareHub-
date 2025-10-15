@@ -34,9 +34,9 @@ export function EnrollmentButton({ courseId, price, isEnrolled }: EnrollmentButt
         const paymentUrl = await initializeChapaPayment({
           amount: price,
           currency: "ETB", // Assuming Ethiopian Birr for Chapa; adjust as needed
-          email: session.user.email,
-          first_name: session.user.name?.split(" ")[0] || "",
-          last_name: session.user.name?.split(" ")[1] || "",
+          email: session.user?.email,
+          first_name: session.user?.name?.split(" ")[0] || "",
+          last_name: session.user?.name?.split(" ")[1] || "",
           tx_ref: `enroll-${courseId}-${Date.now()}`,
           callback_url: `${window.location.origin}/api/chapa/webhook`, // Handle success
           return_url: `${window.location.origin}/courses/${courseId}?enrolled=true`,
