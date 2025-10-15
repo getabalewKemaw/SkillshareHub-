@@ -1,17 +1,37 @@
+"use client"
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search, User, LogOut, LogIn, Menu, BookOpen, LayoutDashboard, Settings } from "lucide-react"; // Lucide icons for clean, consistent visuals
-import { useState } from "react";
-
+import { Search, User, LogOut, LogIn, Menu, BookOpen, LayoutDashboard, Settings, ShoppingCart } from "lucide-react"; // Lucide icons for clean, consistent visuals
+import { useState, useEffect } from "react";
 export function Navbar() {
   const { data: session } = useSession();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchCartCount();
+    }
+  }, [session]);
+
+  const fetchCartCount = async () => {
+    try {
+      const res = await fetch('/api/cart');
+      if (res.ok) {
+        const data = await res.json();
+        setCartCount(data.cartItems?.length || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching cart count:', error);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +39,6 @@ export function Navbar() {
       router.push(`/courses?search=${encodeURIComponent(searchQuery)}`);
     }
   };
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,6 +77,16 @@ export function Navbar() {
               <>
                 <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
                   Dashboard
+                </Link>
+                <Link href="/cart" className="relative">
+                  <Button variant="ghost" size="icon">
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartCount > 0 && (
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                        {cartCount}
+                      </Badge>
+                    )}
+                  </Button>
                 </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -131,6 +160,12 @@ export function Navbar() {
                     <>
                       <Link href="/dashboard" className="text-sm font-medium">
                         Dashboard
+                      </Link>
+                      <Link href="/cart" className="text-sm font-medium flex items-center justify-between">
+                        <span>Cart</span>
+                        {cartCount > 0 && (
+                          <Badge>{cartCount}</Badge>
+                        )}
                       </Link>
                       <Link href="/profile" className="text-sm font-medium">
                         Profile
