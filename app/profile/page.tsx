@@ -52,8 +52,10 @@ export default async function ProfilePage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">My Profile</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-4xl sm:text-5xl font-extrabold mb-2">
+            My <span className="text-brand-gradient">Profile</span>
+          </h1>
+          <p className="text-muted-foreground text-lg">
             Manage your account information and preferences
           </p>
         </div>
@@ -101,31 +103,37 @@ export default async function ProfilePage() {
 
           {/* Stats */}
           <div className="grid sm:grid-cols-3 gap-4">
-            <Card>
+            <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
-                <CardDescription className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
+                <CardDescription className="flex items-center gap-2 font-medium">
+                  <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                    <BookOpen className="h-4 w-4 text-white" />
+                  </div>
                   Courses Created
                 </CardDescription>
-                <CardTitle className="text-3xl">{user._count.courses}</CardTitle>
+                <CardTitle className="text-3xl font-bold text-brand-gradient">{user._count.courses}</CardTitle>
               </CardHeader>
             </Card>
-            <Card>
+            <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
-                <CardDescription className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
+                <CardDescription className="flex items-center gap-2 font-medium">
+                  <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                    <User className="h-4 w-4 text-white" />
+                  </div>
                   Enrollments
                 </CardDescription>
-                <CardTitle className="text-3xl">{user._count.enrollments}</CardTitle>
+                <CardTitle className="text-3xl font-bold text-brand-gradient">{user._count.enrollments}</CardTitle>
               </CardHeader>
             </Card>
-            <Card>
+            <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
-                <CardDescription className="flex items-center gap-2">
-                  <Award className="h-4 w-4" />
+                <CardDescription className="flex items-center gap-2 font-medium">
+                  <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                    <Award className="h-4 w-4 text-white" />
+                  </div>
                   Reviews Written
                 </CardDescription>
-                <CardTitle className="text-3xl">{user._count.reviews}</CardTitle>
+                <CardTitle className="text-3xl font-bold text-brand-gradient">{user._count.reviews}</CardTitle>
               </CardHeader>
             </Card>
           </div>
@@ -197,10 +205,10 @@ export default async function ProfilePage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <Button type="submit" className="flex-1">
+                  <Button type="submit" className="flex-1 btn-brand-gradient text-white font-semibold">
                     Save Changes
                   </Button>
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" className="border-2">
                     Cancel
                   </Button>
                 </div>

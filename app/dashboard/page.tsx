@@ -76,61 +76,71 @@ export default async function DashboardPage() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-4xl font-bold">Welcome back, {user.name || 'Student'}!</h1>
+              <h1 className="text-3xl sm:text-4xl font-extrabold">
+                Welcome back, <span className="text-brand-gradient">{user.name || 'Student'}</span>!
+              </h1>
               <p className="text-muted-foreground">Continue your learning journey</p>
             </div>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
-              <CardDescription>Enrolled Courses</CardDescription>
-              <CardTitle className="text-3xl">{user.enrollments.length}</CardTitle>
+              <CardDescription className="font-medium">Enrolled Courses</CardDescription>
+              <CardTitle className="text-3xl font-bold text-brand-gradient">{user.enrollments.length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <BookOpen className="h-4 w-4" />
+                <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                  <BookOpen className="h-4 w-4 text-white" />
+                </div>
                 <span>{activeEnrollments.length} active</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
-              <CardDescription>Completed</CardDescription>
-              <CardTitle className="text-3xl">{completedEnrollments.length}</CardTitle>
+              <CardDescription className="font-medium">Completed</CardDescription>
+              <CardTitle className="text-3xl font-bold text-brand-gradient">{completedEnrollments.length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Award className="h-4 w-4" />
+                <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                  <Award className="h-4 w-4 text-white" />
+                </div>
                 <span>Certificates earned</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
-              <CardDescription>Average Progress</CardDescription>
-              <CardTitle className="text-3xl">{Math.round(totalProgress)}%</CardTitle>
+              <CardDescription className="font-medium">Average Progress</CardDescription>
+              <CardTitle className="text-3xl font-bold text-brand-gradient">{Math.round(totalProgress)}%</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <TrendingUp className="h-4 w-4" />
+                <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4 text-white" />
+                </div>
                 <span>Keep going!</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
-              <CardDescription>Reviews Written</CardDescription>
-              <CardTitle className="text-3xl">{user.reviews.length}</CardTitle>
+              <CardDescription className="font-medium">Reviews Written</CardDescription>
+              <CardTitle className="text-3xl font-bold text-brand-gradient">{user.reviews.length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Star className="h-4 w-4" />
+                <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                  <Star className="h-4 w-4 text-white" />
+                </div>
                 <span>Your feedback</span>
               </div>
             </CardContent>
@@ -140,8 +150,10 @@ export default async function DashboardPage() {
         {/* Continue Learning Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Continue Learning</h2>
-            <Button variant="outline" asChild>
+            <h2 className="text-2xl sm:text-3xl font-extrabold">
+              <span className="text-brand-gradient">Continue</span> Learning
+            </h2>
+            <Button variant="outline" asChild className="border-2 border-purple-500 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 font-semibold">
               <Link href="/courses">
                 Browse More <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -191,7 +203,7 @@ export default async function DashboardPage() {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button asChild className="w-full">
+                    <Button asChild className="w-full btn-brand-gradient text-white font-semibold">
                       <Link href={`/courses/${enrollment.course.id}/materials`}>
                         Continue Course
                       </Link>
@@ -208,7 +220,7 @@ export default async function DashboardPage() {
                 <p className="text-muted-foreground mb-6">
                   Start learning today! Browse our course catalog to find something you love.
                 </p>
-                <Button asChild size="lg">
+                <Button asChild size="lg" className="btn-brand-gradient text-white font-semibold">
                   <Link href="/courses">Explore Courses</Link>
                 </Button>
               </div>
@@ -219,7 +231,9 @@ export default async function DashboardPage() {
         {/* Completed Courses */}
         {completedEnrollments.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-6">Completed Courses</h2>
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-6">
+              <span className="text-brand-gradient">Completed</span> Courses
+            </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {completedEnrollments.map((enrollment) => (
                 <Card key={enrollment.id} className="relative overflow-hidden">
@@ -252,7 +266,7 @@ export default async function DashboardPage() {
                         View Course
                       </Link>
                     </Button>
-                    <Button asChild className="flex-1">
+                    <Button asChild className="flex-1 btn-brand-gradient text-white font-semibold">
                       <Link href={`/certificates/${enrollment.id}`}>
                         Certificate
                       </Link>
@@ -267,7 +281,9 @@ export default async function DashboardPage() {
         {/* Recent Reviews */}
         {user.reviews.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Your Recent Reviews</h2>
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-6">
+              Your <span className="text-brand-gradient">Recent Reviews</span>
+            </h2>
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-4">

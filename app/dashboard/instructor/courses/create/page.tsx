@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Upload, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 const courseSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -257,7 +258,7 @@ export default function CreateCoursePage() {
                 <div className="border-2 border-dashed rounded-lg p-6 text-center">
                   {thumbnailPreview ? (
                     <div className="space-y-2">
-                      <img
+                      <Image
                         src={thumbnailPreview}
                         alt="Thumbnail preview"
                         className="w-full max-h-48 object-cover rounded"

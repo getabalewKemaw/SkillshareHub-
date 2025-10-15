@@ -94,8 +94,10 @@ export default async function CoursesPage({
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Explore Courses</h1>
-          <p className="text-xl text-muted-foreground">
+          <h1 className="text-4xl sm:text-5xl font-extrabold mb-2">
+            <span className="text-brand-gradient">Explore</span> Courses
+          </h1>
+          <p className="text-lg sm:text-xl text-muted-foreground">
             Discover {courses.length} courses to help you achieve your goals
           </p>
         </div>
@@ -114,9 +116,9 @@ export default async function CoursesPage({
                 : 0
 
               return (
-                <Card key={course.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col">
+                <Card key={course.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col border-purple-100/50 dark:border-purple-900/50 hover:border-purple-300 dark:hover:border-purple-700">
                   <CardHeader className="pb-3">
-                    <div className="aspect-video bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg mb-4 flex items-center justify-center overflow-hidden relative">
+                    <div className="aspect-video bg-gradient-to-br from-purple-100/50 to-pink-100/50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg mb-4 flex items-center justify-center overflow-hidden relative group-hover:scale-105 transition-transform">
                       {course.thumbnailUrl ? (
                         <img 
                           src={course.thumbnailUrl} 
@@ -124,7 +126,7 @@ export default async function CoursesPage({
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
                         />
                       ) : (
-                        <BookOpen className="h-12 w-12 text-primary" />
+                        <BookOpen className="h-12 w-12 text-purple-600 dark:text-purple-400" />
                       )}
                       {course.price === 0 && (
                         <Badge className="absolute top-2 right-2 bg-green-500 text-white">Free</Badge>
@@ -132,17 +134,17 @@ export default async function CoursesPage({
                     </div>
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       {course.category && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">
                           {course.category}
                         </Badge>
                       )}
                       {course.price > 0 && (
-                        <Badge variant="outline" className="text-xs font-semibold">
+                        <Badge variant="outline" className="text-xs font-semibold bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800">
                           ${course.price}
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="line-clamp-2 text-lg group-hover:text-primary transition-colors">
+                    <CardTitle className="line-clamp-2 text-lg group-hover:text-brand-gradient transition-colors">
                       {course.title}
                     </CardTitle>
                     <CardDescription className="line-clamp-2 text-sm">
@@ -168,7 +170,7 @@ export default async function CoursesPage({
                     <div className="text-xs text-muted-foreground">
                       By {course.instructor.name || 'Anonymous'}
                     </div>
-                    <Button asChild className="w-full">
+                    <Button asChild className="w-full btn-brand-gradient text-white font-semibold">
                       <Link href={`/courses/${course.id}`}>View Details</Link>
                     </Button>
                   </CardFooter>
@@ -184,7 +186,7 @@ export default async function CoursesPage({
               <p className="text-muted-foreground mb-6">
                 Try adjusting your filters or search terms
               </p>
-              <Button asChild>
+              <Button asChild className="btn-brand-gradient text-white font-semibold">
                 <Link href="/courses">Clear Filters</Link>
               </Button>
             </div>

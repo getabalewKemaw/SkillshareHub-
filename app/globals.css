@@ -122,6 +122,62 @@
 }
 
 @layer utilities {
+  /* Brand Gradient - Purple */
+  .bg-brand-gradient {
+    background: linear-gradient(to right, #E100FF, #7F00FF);
+  }
+  
+  .text-brand-gradient {
+    background: linear-gradient(to right, #E100FF, #7F00FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .border-brand-gradient {
+    border-image: linear-gradient(to right, #E100FF, #7F00FF) 1;
+  }
+  
+  /* Gradient Button with Hover Effect */
+  .btn-brand-gradient {
+    background: linear-gradient(to right, #E100FF, #7F00FF);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-brand-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .btn-brand-gradient:hover::before {
+    left: 100%;
+  }
+  
+  .btn-brand-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(127, 0, 255, 0.4);
+  }
+  
+  /* Gradient Border */
+  .border-gradient-brand {
+    border: 2px solid transparent;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-image: linear-gradient(white, white), linear-gradient(to right, #E100FF, #7F00FF);
+  }
+  
+  .dark .border-gradient-brand {
+    background-image: linear-gradient(oklch(0.205 0 0), oklch(0.205 0 0)), linear-gradient(to right, #E100FF, #7F00FF);
+  }
+  
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
@@ -131,12 +187,30 @@
     animation-delay: 1.5s;
   }
   
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+  
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
     }
     50% {
       transform: translateY(-10px);
+    }
+  }
+  
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
     }
   }
   

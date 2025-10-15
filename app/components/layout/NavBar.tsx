@@ -45,9 +45,13 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <BookOpen className="h-6 w-6 text-primary" aria-hidden="true" />
-              <span className="font-bold text-xl">SkillShare Hub</span>
+            <Link href="/" className="flex items-center space-x-2 group">
+              <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center group-hover:scale-110 transition-transform">
+                <BookOpen className="h-5 w-5 text-white" aria-hidden="true" />
+              </div>
+              <span className="font-extrabold text-xl">
+                <span className="text-brand-gradient">SkillShare</span> Hub
+              </span>
             </Link>
           </div>
 
@@ -125,7 +129,7 @@ export function Navbar() {
                 </DropdownMenu>
               </>
             ) : (
-              <Button onClick={() => signIn()} variant="outline">
+              <Button onClick={() => signIn()} className="btn-brand-gradient text-white font-semibold">
                 <LogIn className="mr-2 h-4 w-4" /> Log in
               </Button>
             )}

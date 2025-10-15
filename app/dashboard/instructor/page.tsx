@@ -70,10 +70,12 @@ export default async function InstructorDashboardPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Instructor Dashboard</h1>
-            <p className="text-muted-foreground">Manage your courses and track performance</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold mb-2">
+              <span className="text-brand-gradient">Instructor</span> Dashboard
+            </h1>
+            <p className="text-muted-foreground text-lg">Manage your courses and track performance</p>
           </div>
-          <Button asChild size="lg">
+          <Button asChild size="lg" className="btn-brand-gradient text-white font-semibold">
             <Link href="/dashboard/instructor/create">
               <Plus className="mr-2 h-5 w-5" />
               Create New Course
@@ -82,50 +84,56 @@ export default async function InstructorDashboardPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
-              <CardDescription>Total Courses</CardDescription>
-              <CardTitle className="text-3xl">{user.courses.length}</CardTitle>
+              <CardDescription className="font-medium">Total Courses</CardDescription>
+              <CardTitle className="text-3xl font-bold text-brand-gradient">{user.courses.length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <BookOpen className="h-4 w-4" />
+                <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                  <BookOpen className="h-4 w-4 text-white" />
+                </div>
                 <span>{publishedCourses} published, {draftCourses} drafts</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
-              <CardDescription>Total Students</CardDescription>
-              <CardTitle className="text-3xl">{totalStudents}</CardTitle>
+              <CardDescription className="font-medium">Total Students</CardDescription>
+              <CardTitle className="text-3xl font-bold text-brand-gradient">{totalStudents}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4" />
+                <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                  <Users className="h-4 w-4 text-white" />
+                </div>
                 <span>Across all courses</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
-              <CardDescription>Total Revenue</CardDescription>
-              <CardTitle className="text-3xl">${totalRevenue.toFixed(2)}</CardTitle>
+              <CardDescription className="font-medium">Total Revenue</CardDescription>
+              <CardTitle className="text-3xl font-bold text-brand-gradient">${totalRevenue.toFixed(2)}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <DollarSign className="h-4 w-4" />
+                <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                  <DollarSign className="h-4 w-4 text-white" />
+                </div>
                 <span>Lifetime earnings</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-purple-100/50 dark:border-purple-900/50 hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
-              <CardDescription>Avg. Rating</CardDescription>
-              <CardTitle className="text-3xl">
+              <CardDescription className="font-medium">Avg. Rating</CardDescription>
+              <CardTitle className="text-3xl font-bold text-brand-gradient">
                 {user.courses.length > 0
                   ? (
                       user.courses.reduce((acc, course) => {
@@ -140,7 +148,9 @@ export default async function InstructorDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <TrendingUp className="h-4 w-4" />
+                <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4 text-white" />
+                </div>
                 <span>Overall performance</span>
               </div>
             </CardContent>
@@ -149,7 +159,9 @@ export default async function InstructorDashboardPage() {
 
         {/* Courses List */}
         <div>
-          <h2 className="text-2xl font-bold mb-6">Your Courses</h2>
+          <h2 className="text-2xl sm:text-3xl font-extrabold mb-6">
+            Your <span className="text-brand-gradient">Courses</span>
+          </h2>
           {user.courses.length > 0 ? (
             <div className="space-y-4">
               {user.courses.map((course) => {
@@ -224,7 +236,7 @@ export default async function InstructorDashboardPage() {
 
                           {/* Actions */}
                           <div className="flex flex-wrap gap-2 pt-3">
-                            <Button asChild variant="default" size="sm">
+                            <Button asChild size="sm" className="btn-brand-gradient text-white font-semibold">
                               <Link href={`/dashboard/instructor/${course.id}`}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
@@ -258,7 +270,7 @@ export default async function InstructorDashboardPage() {
                 <p className="text-muted-foreground mb-6">
                   Create your first course and start sharing your knowledge with students worldwide.
                 </p>
-                <Button asChild size="lg">
+                <Button asChild size="lg" className="btn-brand-gradient text-white font-semibold">
                   <Link href="/dashboard/instructor/create">
                     <Plus className="mr-2 h-5 w-5" />
                     Create Your First Course

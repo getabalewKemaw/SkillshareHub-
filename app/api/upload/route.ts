@@ -5,8 +5,6 @@ import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
 import { existsSync } from "fs"
 
-// This is a local development upload handler
-// For production, replace with S3/Cloudinary/Vercel Blob
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
